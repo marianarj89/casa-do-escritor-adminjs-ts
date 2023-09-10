@@ -6,19 +6,26 @@ import session from 'express-session';
 import { sequelize }  from './db';
 import { Escritor , Livro } from './models';
 import * as AdminJSSequelize from '@adminjs/sequelize';
+import * as AdminJSMongoose from '@adminjs/mongoose';
 import { generateResource } from "./utils/modeling.models";
 import { encryptPassword } from './utils/escritor.utils';
 import bcrypt from 'bcrypt';
+import { Chat } from './models/chat.entity';
+import chat from './routes/chat';
+import mongoose from 'mongoose'
+
 require('dotenv').config();
 
 const mysqlStore = require('express-mysql-session')(session);
 
-
-
-
 AdminJS.registerAdapter({
   Resource: AdminJSSequelize.Resource,
   Database: AdminJSSequelize.Database,
+});
+
+AdminJS.registerAdapter({
+  Resource: AdminJSMongoose.Resource,
+  Database: AdminJSMongoose.Database
 });
 
 const PORT = 3000
@@ -102,6 +109,8 @@ const start = async () => {
 );
 
   app.use(admin.options.rootPath, adminRouter)
+  // app.use(bodyParser.urlencoded({ extended: true }));
+  app.use('/chat', chat);
 
 
   app.listen(PORT, () => {
